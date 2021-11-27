@@ -1,0 +1,13 @@
+1.       Implement CBA (Classification-Based Association) algorithm
+
+CBA uses an iterative approach to frequent itemset mining, similar to Apriori. 
+The complete set of rules satisfying minimum confidence and minimum support thresholds are found and then analyzed for inclusion in the classifier. 
+The rules are organized according to decreasing precedence based on their support and confidence. 
+If a set of rules has the same antecedent, then the rule with the highest confidence is selected to 
+represent the set. When classifying a new tuple, the first rule satisfying the tuple is used to classify it.
+The classifier also contains a default rule, having lowest precedence, which specifies 
+a default class for any new tuple that is not satisfied by any other rule in the classifier.
+
+Consider the following dataset D to test a new tuple
+
+
