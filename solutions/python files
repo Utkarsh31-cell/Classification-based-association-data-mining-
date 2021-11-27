@@ -1,0 +1,557 @@
+import itertools
+def check2(subset, data):
+    res = "No"
+    flag1, flag2, flag3, flag4 = 0, 0, 0,0
+    subset = set(subset)
+    for i in data:
+        for j in i:
+            l1 = len(j)
+            r = j[len(j)-5]
+            temp = set(j)
+            if(subset.issubset(temp)):
+                
+                return None
+            
+  
+    return res
+
+
+
+
+
+def Preprocessing(age, income, student, credit_card):
+    if income =='a':
+        income = 'h'
+    elif income == 'b':
+        income = 'm'
+    else:
+        income = 'l'
+    if student == 'a':
+        student = 's'
+    else:
+        student = 't'
+    if credit_card == 'a':
+        credit_card = 'f'
+    else:
+        credit_card = 'e'
+    return [ age, income, student, credit_rating]
+
+def Support_Calculator(x,y):
+    return round((x/y)*100, 2)
+
+
+def Confidence_Calculator(x, y):
+    return  round((x/y)*100, 2)
+
+
+def check(data, lis):
+    y, n = 0, 0
+    lis = set(lis)
+    for q in data:
+        demo = q[1]
+        temp = set(q[1])
+        if(lis.issubset(temp)):
+            if demo[len(demo)-1] =='Yes':
+                y+=1
+            if demo[len(demo)-1] =='No':
+                n+=1
+
+
+    return y, n
+
+def Predict(lis, data):
+    default = "Yes"
+    for L in range(1, len(lis)):
+        for subset in itertools.combinations(lis, L):
+          
+            check2(subset, data)
+
+    print("Final Output: ", default)
+    return None
+
+data = [
+	[[1],['a', 'h', 't', 'f', 'No']],
+	[[2],['a', 'h', 't', 'e', 'No']],
+	[[3],['b', 'h', 't', 'f', 'Yes']],
+	[[4],['c', 'm', 't', 'f', 'Yes']],
+	[[5],['c', 'l', 's', 'f', 'Yes']],
+	[[6],['c' ,'l', 's', 'e', 'No']],
+	[[7],['b', 'l', 's', 'e', 'Yes']],
+	[[8],['a', 'm', 't', 'f', 'No']],
+	[[9],['a', 'l', 's', 'f', 'Yes']],
+	[[10],['c', 'm', 's', 'f', 'Yes']],
+	[[11],['a', 'm', 's', 'e', 'Yes']],
+	[[12],['b', 'm', 't', 'e', 'Yes']],
+	[[13],['b', 'h', 's', 'f', 'Yes']],
+	[[14],['c', 'm', 't', 'e', 'No']]
+       ]
+
+length_dataset = 14
+init1 = []
+for i in data:
+    for q in i[1]:
+        if(q not in init1):
+            init1.append(q)
+init1 = sorted(init1)
+init = []
+for i in init1:
+    if i!='No' and i!='Yes':
+        init.append(i)
+        print(i)    
+
+print(init)
+s = 2                                                  
+
+minimum_support = 10                                  
+minimum_confidence = 60                               
+ 
+con1 = []
+
+
+
+
+from collections import Counter
+c = Counter()
+
+
+for i in init:
+    for d in data:
+        if(i in d[1]):
+            c[i]+=1
+print("C1:")
+for i in c:
+    print(str([i])+": "+str(c[i]))
+
+
+print()
+l = Counter()
+for i in c:
+    if(c[i] >= s):
+        l[frozenset([i])]+=c[i]
+print("L1:")
+con2 = []
+for i in l:
+    t = list(i)
+    y, n = check(data,t) #function to count yes and no
+    if y >=s:
+        t.append('Yes')
+        print(str(list(t))+": "+str(l[i]))
+        t.append(y)
+        t.append(l[i])
+        
+        sup = Support_Calculator(l[i],length_dataset)               
+        conf = Confidence_Calculator(y, l[i])                            
+        if sup>=minimum_support and conf>=minimum_confidence:
+           t.append(sup)
+           t.append(conf)
+           con2.append(t)      
+        t = list(i)
+    if n >=s:
+       t.append('No')
+       print(str(list(t))+": "+str(l[i]))
+       t.append(n)
+       t.append(l[i])
+       
+       sup = Support_Calculator(l[i],length_dataset)              
+       conf = Confidence_Calculator(n, l[i])                             
+       if sup>=minimum_support and conf>=minimum_confidence:
+           t.append(sup)
+           t.append(conf)
+           con2.append(t)
+            
+       t = list(i)
+con1.append(con2)
+print()
+pl = l
+pos = 1
+
+for count in range (2,1000):
+    nc = set()
+    #print(nc)
+    temp = list(l)
+  
+    for i in range(0,len(temp)):
+        for j in range(i+1,len(temp)):
+            t = temp[i].union(temp[j])
+            if(len(t) == count):
+                nc.add(temp[i].union(temp[j]))
+    nc = list(nc)
+  
+    c = Counter()
+    #print(c)
+    #print(nc)
+    for i in nc:
+        c[i] = 0
+        #print(i)
+        y,n = 0, 0
+        for q in data:
+            
+            temp = set(q[1])
+            if(i.issubset(temp)):
+                
+                c[i]+=1
+    print("C"+str(count)+":")
+  
+   
+    for i in c:
+      
+        print(str(list(i))+": "+str(c[i]))
+        
+    print()
+    l = Counter()
+    #print(l)
+    for i in c:
+        if(c[i] >= s):
+            l[i]+=c[i]
+    print("L"+str(count)+":")
+    
+    con = []
+    for i in l:
+        
+        t = list(i)
+        y, n = check(data,t)                                             
+        if y >=s:
+            t.append('Yes')
+            print(str(list(t))+": "+str(l[i]))
+            t.append(y)
+            t.append(l[i])
+            
+            sup = Support_Calculator(l[i],length_dataset)              
+            conf = Confidence_Calculator(y, l[i])                            
+            if sup>=minimum_support and conf>=minimum_confidence:
+                t.append(sup)
+                t.append(conf)
+                con.append(t)
+            t = list(i)
+        if n >=s:
+            t.append('No')
+            print(str(list(t))+": "+str(l[i]))
+            t.append(n)
+            t.append(l[i])
+            
+            sup = Support_Calculator(l[i],length_dataset)                           
+            conf = Confidence_Calculator(n, l[i])                                       
+            if sup>=minimum_support and conf>=minimum_confidence:
+                t.append(sup)
+                t.append(conf)
+                con.append(t)
+            
+            t = list(i)
+      
+    print()
+    if(len(l) == 0):
+        break
+    pl = l
+    pos = count
+   
+    con1.append(con)
+   
+transformed_data = con1         
+l1 = 0
+print(transformed_data)
+for i in transformed_data:
+    l1 = len(i)
+    for j in i:
+        print(j)
+l2 = 0
+for i in transformed_data:
+    l2+=len(i)
+
+print(l2)
+print("Enter your choices")
+age = input("age: a) youth b) middle_aged c) senior\n")
+income = input("Income: a) high b)medium c)low \n")
+student = input("student: a) yes b) no\n ")
+credit_rating = input("credit_rating: a) fair b) excellent\n ")
+arr = Preprocessing(age, income, student, credit_rating)
+print(arr)
+Predict(arr,transformed_data)
+
+
+/*
+Input:->
+output:->
+
+a
+b
+c
+e
+f
+h
+l
+m
+s
+t
+['a', 'b', 'c', 'e', 'f', 'h', 'l', 'm', 's', 't']
+C1:
+['a']: 5
+['b']: 4
+['c']: 5
+['e']: 6
+['f']: 8
+['h']: 4
+['l']: 4
+['m']: 6
+['s']: 7
+['t']: 7
+
+L1:
+['a', 'Yes']: 5
+['a', 'No']: 5
+['b', 'Yes']: 4
+['c', 'Yes']: 5
+['c', 'No']: 5
+['e', 'Yes']: 6
+['e', 'No']: 6
+['f', 'Yes']: 8
+['f', 'No']: 8
+['h', 'Yes']: 4
+['h', 'No']: 4
+['l', 'Yes']: 4
+['m', 'Yes']: 6
+['m', 'No']: 6
+['s', 'Yes']: 7
+['t', 'Yes']: 7
+['t', 'No']: 7
+
+C2:
+['m', 'h']: 0
+['c', 'l']: 2
+['h', 'f']: 3
+['t', 'e']: 3
+['c', 'f']: 3
+['h', 'l']: 0
+['t', 'f']: 4
+['t', 'h']: 3
+['c', 't']: 2
+['b', 's']: 2
+['c', 'h']: 0
+['b', 'a']: 0
+['b', 'f']: 2
+['s', 'a']: 2
+['l', 'f']: 2
+['m', 'f']: 3
+['m', 'a']: 2
+['m', 's']: 2
+['e', 'h']: 1
+['e', 'f']: 0
+['b', 'h']: 2
+['c', 's']: 3
+['h', 'a']: 2
+['t', 'l']: 0
+['c', 'e']: 2
+['e', 's']: 3
+['e', 'a']: 2
+['b', 'l']: 1
+['b', 'c']: 0
+['m', 'e']: 3
+['b', 't']: 2
+['t', 'm']: 4
+['e', 'l']: 2
+['b', 'e']: 2
+['c', 'm']: 3
+['s', 'f']: 4
+['f', 'a']: 3
+['l', 'a']: 1
+['s', 'l']: 4
+['c', 'a']: 0
+['b', 'm']: 1
+['s', 'h']: 1
+['m', 'l']: 0
+['t', 'a']: 3
+['t', 's']: 0
+
+L2:
+['h', 'f', 'Yes']: 3
+['t', 'e', 'No']: 3
+['c', 'f', 'Yes']: 3
+['t', 'f', 'Yes']: 4
+['t', 'f', 'No']: 4
+['t', 'h', 'No']: 3
+['b', 's', 'Yes']: 2
+['b', 'f', 'Yes']: 2
+['s', 'a', 'Yes']: 2
+['l', 'f', 'Yes']: 2
+['m', 'f', 'Yes']: 3
+['m', 's', 'Yes']: 2
+['b', 'h', 'Yes']: 2
+['c', 's', 'Yes']: 3
+['h', 'a', 'No']: 2
+['c', 'e', 'No']: 2
+['e', 's', 'Yes']: 3
+['m', 'e', 'Yes']: 3
+['b', 't', 'Yes']: 2
+['t', 'm', 'Yes']: 4
+['t', 'm', 'No']: 4
+['b', 'e', 'Yes']: 2
+['c', 'm', 'Yes']: 3
+['s', 'f', 'Yes']: 4
+['f', 'a', 'No']: 3
+['s', 'l', 'Yes']: 4
+['t', 'a', 'No']: 3
+
+C3:
+['b', 'c', 'f']: 0
+['c', 's', 'l']: 2
+['s', 'l', 'a']: 1
+['b', 'm', 's']: 0
+['c', 's', 'a']: 0
+['b', 't', 's']: 0
+['t', 'e', 'f']: 0
+['b', 'h', 'a']: 0
+['c', 't', 'l']: 0
+['m', 'e', 'f']: 0
+['c', 't', 'a']: 0
+['b', 'c', 't']: 0
+['c', 't', 'm']: 2
+['c', 'f', 'a']: 0
+['t', 'm', 'f']: 2
+['c', 'e', 'l']: 1
+['c', 'l', 'f']: 1
+['h', 'f', 'a']: 1
+['b', 't', 'e']: 1
+['c', 'h', 'f']: 0
+['c', 'm', 's']: 1
+['t', 'm', 's']: 0
+['b', 'm', 'e']: 1
+['t', 's', 'a']: 0
+['s', 'f', 'a']: 1
+['c', 'e', 'f']: 0
+['t', 'm', 'h']: 0
+['t', 'm', 'a']: 1
+['c', 's', 'e']: 1
+['h', 'l', 'f']: 0
+['b', 'e', 'l']: 1
+['e', 's', 'f']: 0
+['e', 'l', 'a']: 0
+['m', 'e', 'l']: 0
+['m', 's', 'a']: 1
+['m', 'l', 'f']: 0
+['m', 'h', 'f']: 0
+['c', 't', 'e']: 1
+['t', 'l', 'f']: 0
+['b', 'c', 'e']: 0
+['m', 'e', 'a']: 1
+['m', 'h', 'a']: 0
+['b', 't', 'h']: 1
+['e', 'f', 'a']: 0
+['l', 'e', 's']: 2
+['e', 'l', 'f']: 0
+['b', 't', 'm']: 1
+['s', 'e', 'a']: 1
+['e', 'm', 's']: 1
+['s', 'h', 'a']: 0
+['t', 'e', 'l']: 0
+['b', 's', 'h']: 1
+['c', 'm', 'f']: 2
+['b', 't', 'f']: 1
+['e', 'h', 'a']: 1
+['b', 'h', 'f']: 2
+['t', 'e', 'a']: 1
+['b', 'l', 'f']: 0
+['b', 's', 'a']: 0
+['c', 't', 's']: 0
+['c', 's', 'f']: 2
+['b', 's', 'f']: 1
+['c', 'm', 'l']: 0
+['t', 'h', 'a']: 2
+['b', 'e', 'f']: 0
+['c', 't', 'h']: 0
+['t', 'e', 's']: 0
+['s', 'h', 'f']: 1
+['c', 'm', 'a']: 0
+['b', 's', 'e']: 1
+['b', 'm', 'f']: 0
+['l', 'm', 's']: 0
+['m', 'f', 'a']: 1
+['t', 'e', 'h']: 1
+['b', 'f', 'a']: 0
+['b', 's', 'l']: 1
+['c', 't', 'f']: 1
+['t', 'f', 'a']: 2
+['b', 'e', 'h']: 0
+['b', 'c', 's']: 0
+['t', 'e', 'm']: 2
+['l', 'f', 'a']: 1
+['t', 'h', 'f']: 2
+['b', 'e', 'a']: 0
+['c', 'm', 'e']: 1
+['c', 'e', 'a']: 0
+['m', 's', 'f']: 1
+['t', 's', 'f']: 0
+['s', 'l', 'f']: 2
+['b', 't', 'a']: 0
+
+L3:
+['c', 'm', 'f', 'Yes']: 2
+['b', 'h', 'f', 'Yes']: 2
+['c', 's', 'f', 'Yes']: 2
+['t', 'h', 'a', 'No']: 2
+['t', 'f', 'a', 'No']: 2
+['s', 'l', 'f', 'Yes']: 2
+
+C4:
+['t', 'h', 'f', 'a']: 1
+['t', 'm', 'f', 'e']: 0
+['m', 'f', 'c', 's']: 1
+['t', 'm', 'c', 'e']: 1
+['t', 'm', 'f', 'c']: 1
+['t', 'm', 'f', 'a']: 1
+['l', 'f', 'c', 's']: 1
+['l', 'c', 's', 'e']: 1
+['b', 't', 'h', 'f']: 1
+['l', 's', 'f', 'e']: 0
+['t', 'm', 'h', 'f']: 0
+
+L4:
+
+[[['b', 'Yes', 4, 4, 28.57, 100.0], ['c', 'Yes', 3, 5, 35.71, 60.0], ['f', 'Yes', 6, 8, 57.14, 75.0], ['l', 'Yes', 3, 4, 28.57, 75.0], ['m', 'Yes', 4, 6, 42.86, 66.67], ['s', 'Yes', 6, 7, 50.0, 85.71]], [['h', 'f', 'Yes', 2, 3, 21.43, 66.67], ['t', 'e', 'No', 2, 3, 21.43, 66.67], ['c', 'f', 'Yes', 3, 3, 21.43, 100.0], ['t', 'h', 'No', 2, 3, 21.43, 66.67], ['b', 's', 'Yes', 2, 2, 14.29, 100.0], ['b', 'f', 'Yes', 2, 2, 14.29, 100.0], ['s', 'a', 'Yes', 2, 2, 14.29, 100.0], ['l', 'f', 'Yes', 2, 2, 14.29, 100.0], ['m', 'f', 'Yes', 2, 3, 21.43, 66.67], ['m', 's', 'Yes', 2, 2, 14.29, 100.0], ['b', 'h', 'Yes', 2, 2, 14.29, 100.0], ['c', 's', 'Yes', 2, 3, 21.43, 66.67], ['h', 'a', 'No', 2, 2, 14.29, 100.0], ['c', 'e', 'No', 2, 2, 14.29, 100.0], ['e', 's', 'Yes', 2, 3, 21.43, 66.67], ['m', 'e', 'Yes', 2, 3, 21.43, 66.67], ['b', 't', 'Yes', 2, 2, 14.29, 100.0], ['b', 'e', 'Yes', 2, 2, 14.29, 100.0], ['c', 'm', 'Yes', 2, 3, 21.43, 66.67], ['s', 'f', 'Yes', 4, 4, 28.57, 100.0], ['f', 'a', 'No', 2, 3, 21.43, 66.67], ['s', 'l', 'Yes', 3, 4, 28.57, 75.0], ['t', 'a', 'No', 3, 3, 21.43, 100.0]], [['c', 'm', 'f', 'Yes', 2, 2, 14.29, 100.0], ['b', 'h', 'f', 'Yes', 2, 2, 14.29, 100.0], ['c', 's', 'f', 'Yes', 2, 2, 14.29, 100.0], ['t', 'h', 'a', 'No', 2, 2, 14.29, 100.0], ['t', 'f', 'a', 'No', 2, 2, 14.29, 100.0], ['s', 
+'l', 'f', 'Yes', 2, 2, 14.29, 100.0]]]
+['b', 'Yes', 4, 4, 28.57, 100.0]
+['c', 'Yes', 3, 5, 35.71, 60.0]
+['f', 'Yes', 6, 8, 57.14, 75.0]
+['l', 'Yes', 3, 4, 28.57, 75.0]
+['m', 'Yes', 4, 6, 42.86, 66.67]
+['s', 'Yes', 6, 7, 50.0, 85.71]
+['h', 'f', 'Yes', 2, 3, 21.43, 66.67]
+['t', 'e', 'No', 2, 3, 21.43, 66.67]
+['c', 'f', 'Yes', 3, 3, 21.43, 100.0]
+['t', 'h', 'No', 2, 3, 21.43, 66.67]
+['b', 's', 'Yes', 2, 2, 14.29, 100.0]
+['b', 'f', 'Yes', 2, 2, 14.29, 100.0]
+['s', 'a', 'Yes', 2, 2, 14.29, 100.0]
+['l', 'f', 'Yes', 2, 2, 14.29, 100.0]
+['m', 'f', 'Yes', 2, 3, 21.43, 66.67]
+['m', 's', 'Yes', 2, 2, 14.29, 100.0]
+['b', 'h', 'Yes', 2, 2, 14.29, 100.0]
+['c', 's', 'Yes', 2, 3, 21.43, 66.67]
+['h', 'a', 'No', 2, 2, 14.29, 100.0]
+['c', 'e', 'No', 2, 2, 14.29, 100.0]
+['e', 's', 'Yes', 2, 3, 21.43, 66.67]
+['m', 'e', 'Yes', 2, 3, 21.43, 66.67]
+['b', 't', 'Yes', 2, 2, 14.29, 100.0]
+['b', 'e', 'Yes', 2, 2, 14.29, 100.0]
+['c', 'm', 'Yes', 2, 3, 21.43, 66.67]
+['s', 'f', 'Yes', 4, 4, 28.57, 100.0]
+['f', 'a', 'No', 2, 3, 21.43, 66.67]
+['s', 'l', 'Yes', 3, 4, 28.57, 75.0]
+['t', 'a', 'No', 3, 3, 21.43, 100.0]
+['c', 'm', 'f', 'Yes', 2, 2, 14.29, 100.0]
+['b', 'h', 'f', 'Yes', 2, 2, 14.29, 100.0]
+['c', 's', 'f', 'Yes', 2, 2, 14.29, 100.0]
+['t', 'h', 'a', 'No', 2, 2, 14.29, 100.0]
+['t', 'f', 'a', 'No', 2, 2, 14.29, 100.0]
+['s', 'l', 'f', 'Yes', 2, 2, 14.29, 100.0]
+35
+Enter your choices
+age: a) youth b) middle_aged c) senior
+a
+Income: a) high b)medium c)low 
+b
+student: a) yes b) no
+ b
+credit_rating: a) fair b) excellent
+ a
+['a', 'm', 't', 'a']
+Final Output:  Yes  
+*/
